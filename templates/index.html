@@ -1,0 +1,43 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Guide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css"
+          integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Personal Guide</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <button class="btn-primary">Options</button>
+        </div><!--/.navbar-collapse -->
+    </div>
+</nav>
+<div class="jumbotron">
+    <div class="container">
+        <h1>Explore the world in a smart way!</h1>
+    </div>
+</div>
+
+<div id="form">
+    <form action="/venues/">
+        <div class="container" id="container">
+            <label for="city"><h2>Choose city:</h2></label></button>
+            <input type="text" class="form-control" name="city" id="city" placeholder="Warsaw">
+            <input type="submit" class="btn btn-lg btn-primary" value="EXPLORE!">
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="{% static 'jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'bootstrap.js' %}"></script>
+</body>
+</html>
