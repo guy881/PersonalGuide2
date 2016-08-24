@@ -17,10 +17,13 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from PersonalGuide import views
+
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^venues_foursquare/$', views.venues_foursquare, name='venues_foursquare'),
+    url(r'^venues_foursquare/(?P<venue_id>[\w\-]{24})/$', views.venues_foursquare_details,
+        name='venues_foursquare_details'),
     url(r'^venues_foursquare/popular/$', views.popular_venues_foursquare, name='popular_venues_foursquare'),
     url(r'^venues/', views.venues, name="venues"),
     url(r'^venues/map/$', views.venues_map, name='venues_map'),

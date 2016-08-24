@@ -1,7 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import json, datetime, urllib2
 from django.http import HttpResponse
 from django.shortcuts import render
-
+from venues import get_food_venues
 # current date
 from django.template import Context
 
@@ -83,7 +85,7 @@ def venues(request):
     if 'city' in request.GET:
         # check if it exists in foursquare
         location = 'near=' + str(request.GET['city'])
-        url = "https://api.foursquare.com/v2/venues/explore?client_id={}&client_secret={}&v={}&{}&section=sights&venuePhotos={}".format(
+        url = "https://api.foursquare.com/v2/venues/explore?client_id={}&client_secret={}&v={}&{}&section=sights&venuePhotos={}&limit=50".format(
             client_id, client_secret, today_date, location, 1
         )
         print "url popular: " + url
@@ -91,15 +93,36 @@ def venues(request):
         venues = json.loads(venues_text)
         venues = venues['response']['groups'][0]['items']
         venues_list = []
+        venues_food = get_food_venues(client_id, client_secret, today_date, location)
 
         for venue in venues:
-            photos = venue['venue']['photos']['groups'][0]['items'][0]
-            venues_list.append({
-                'name': venue['venue']['name'],
-                'id': venue['venue']['id'],
-                'rating': venue['venue']['rating'],
-                'photo': photos['prefix'] + 'width' + str(photos['width']) + photos['suffix'],
-            })
+            # if(venue['venue']['id'] in venues_food):
+            #   continue
+
+            if ('food' in str(venue['venue']['categories'][0]['icon']['prefix'])):
+                continue
+            if ('nightlife' in str(venue['venue']['categories'][0]['icon']['prefix'])):
+                    continue
+            try:
+                photos = venue['venue']['photos']['groups'][0]['items'][0]
+                photo = photos['prefix'] + 'width' + str(photos['width']) + photos['suffix']
+            except IndexError:
+                photo = ""
+
+            formatted_address = ""
+            for line in venue['venue']['location']['formattedAddress']:
+                formatted_address += line + ', '
+            try:
+                venues_list.append({
+                    'name': venue['venue']['name'],
+                    'id': venue['venue']['id'],
+                    'rating': venue['venue']['rating'],
+                    'photo': photo,
+                    'address': formatted_address,
+                    'category': venue['venue']['categories'][0]['name'],
+                })
+            except KeyError:
+                continue
 
         print venues_list
 
@@ -108,3 +131,16 @@ def venues(request):
             'venues': venues_list,
         }
         return render(request, 'venues.html', context)
+    else:
+        return HttpResponse("Incorrect parameters, you must specify near or ll.")
+
+
+def venues_foursquare_details(self, venue_id):
+    url = "https://api.foursquare.com/v2/venues/" + venue_id + "?client_id={}&client_secret={}&v={}".format(
+        client_id, client_secret, today_date,
+    )
+    print url
+    venues_details_text = urllib2.urlopen(url).read()
+    venues = json.loads(venues_details_text)
+    print venues
+    return HttpResponse(json.dumps(venues))

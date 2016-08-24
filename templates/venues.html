@@ -6,8 +6,8 @@
     <title>Attractions in {{ city }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css"
-          integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
@@ -23,7 +23,7 @@
 </nav>
 <div class="jumbotron">
     <div class="container">
-        <h1>Explore {{ city }} in a smart way!</h1>
+        <h2>Explore {{ city }} in a smart way!</h2>
     </div>
 </div>
 
@@ -32,17 +32,71 @@
         {% for venue in venues %}
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="dummy"></div>
-                <div class="thumbnail">
+                <div data-toggle="modal" data-target="#venue_details" class="thumbnail">
                     <img src={{ venue.photo }}>
-                    <h3 class="venue_name" id={{ venue.id }}>{{ venue.name }}</h3>
+                    <h3 class="venue_name" id="{{ venue.id }}" data_venue_category="{{ venue.category }}"
+                        data_venue_address="{{ venue.address }}">{{ venue.name }}</h3>
                 </div>
             </div>
         {% endfor %}
     </div>
 </div>
 
-<script type="text/javascript" src="{% static 'jquery.js' %}"></script>
-<script type="text/javascript" src="{% static 'bootstrap.js' %}"></script>
+<!-- Modal -->
+<div class="modal fade" id="venue_details" tabindex="-1" role="dialog" aria-labelledby="venue_details_label">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="venue_details_label">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <img id="venue_details_photo" src="">
+                <div id="venue_details_description">
+                    <ul>
+                        <li>
+                            <span class="glyphicon glyphicon-tower"></span> <span class="venue_detail"
+                                                                                  id="venue_details_category"></span>
+                        </li>
+                        <li>
+                            <span class="glyphicon glyphicon-flag"></span> <span class="venue_detail"
+                                                                                 id="venue_details_address"></span>
+                        </li>
+                    </ul>
+
+
+                    <p id="venue_description">Lorem ipsum dolor sit amet, no his vero postea appellantur, ludus prompta
+                        mei ex. Debitis
+                        verterem recteque ex nec. Illud prodesset eos no, ea vix ridens complectitur, sea te adhuc
+                        sanctus debitis. Purto soluta oportere in has. Et vel nostrud pertinacia adolescens. Eum eirmod
+                        conceptam delicatissimi ad.
+
+                        Solet libris per cu, mutat discere luptatum in usu, quem verear tacimates pro te. Quo viris
+                        qualisque consectetuer at. Solum affert delicatissimi at cum, an sed erat pertinacia. Cum nulla
+                        fierent phaedrum in, ex mea dicant doctus tractatos. Ei sit elitr accusam, pri habeo nostrum ei.
+                        Eros aliquam iudicabit te ius, quas error dolores ei duo. Mei ut alterum consequat, id dico
+                        vidisse pro.
+
+                        Vide graece accusam eam eu, sed eu alia theophrastus. Pri in possim everti. Quo te nobis eripuit
+                        volutpat, vidit noster referrentur mei te, ex eos aliquam dissentiet. Sea nominati percipitur
+                        cu, numquam alienum sed in, his impetus albucius placerat ne. Veri dolores referrentur in eam.
+                        Iusto ludus diceret eos ne, vis quando feugait ne.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">Choose</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
 <script type="text/javascript" src="{% static 'venues.js' %}"></script>
 </body>
 </html>
