@@ -4,49 +4,39 @@
 function createCORSRequest(method, url) {
     var xhr = new XMLHttpRequest();
     if ("withCredentials" in xhr) {
-
-        // Check if the XMLHttpRequest object has a "withCredentials" property.
-        // "withCredentials" only exists on XMLHTTPRequest2 objects.
         xhr.open(method, url, true);
-
     } else if (typeof XDomainRequest != "undefined") {
-
-        // Otherwise, check if XDomainRequest.
-        // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
         xhr = new XDomainRequest();
         xhr.open(method, url);
-
     } else {
-
-        // Otherwise, CORS is not supported by the browser.
         xhr = null;
-
     }
     return xhr;
 }
 
-function parseVenueName(name) {
-    name.replace(' ', '_');
-    return name;
-}
-
-function getCorrectWikipediaPage(venueName) {
-    var find = "https://www.google.pl/search?as_q=" + venueName.replace(' ', '+') + "&lr=lang_en&as_sitesearch=wikipedia.org";
-    console.log(find);
-    var xhr = createCORSRequest('GET', find);
+function setVenueDescription(venueName) {
+    var findInGoogleUrl = "https://www.google.pl/search?as_q=" + venueName.replace(' ', '+') + "&lr=lang_en&as_sitesearch=wikipedia.org";
+    //console.log(findInGoogleUrl);
+    var xhr = createCORSRequest('GET', findInGoogleUrl);
 
     xhr.onload = function () {
         var response = xhr.responseText;
         //console.log(response);
-        var wikipediaURLIndex = response.indexOf('.wikipedia.org/wiki');
+        var wikipediaURLIndex = response.indexOf('en.wikipedia.org/wiki') + 2;
+        if (wikipediaURLIndex == -1) {
+            wikipediaURLIndex = response.indexOf('.wikipedia.org/wiki');
+        }
         var lang = response.substring(wikipediaURLIndex - 2, wikipediaURLIndex);
         // console.log(lang);
-        var URLAndRest = response.substring(wikipediaURLIndex + '.wikipedia.org/wiki'.length + 1, wikipediaURLIndex + 100);
-        var TitleEndIndex = URLAndRest.indexOf('"');
+        // get url from google page source code
+        var URLAndRest = response.substring(wikipediaURLIndex + '.wikipedia.org/wiki'.length + 1, wikipediaURLIndex + 256);
+        var TitleEndIndex = URLAndRest.indexOf('"'); // end of URL
         var ArticleTitle = URLAndRest.substring(0, TitleEndIndex);
         console.log(ArticleTitle);
 
-        $.getJSON('https://' + lang + '.wikipedia.org/api/rest_v1/page/mobile-text/' + ArticleTitle, function (description) {
+        var wikipediaURL = 'https://' + lang + '.wikipedia.org/api/rest_v1/page/mobile-text/' + ArticleTitle;
+        console.log(wikipediaURL);
+        $.getJSON(wikipediaURL, function (description) {
             var validDescription = "";
             // console.log(description);
             for (i = 0; i < description['sections'][0]['items'].length; i++) {
@@ -59,27 +49,6 @@ function getCorrectWikipediaPage(venueName) {
         });
     };
     xhr.send();
-}
-
-function setDescription(venueName) {
-    $.getJSON('https://en.wikipedia.org/api/rest_v1/page/mobile-text/' + parseVenueName(venueName), function (description) {
-
-    }).done(function (description) {
-        var validDescription = "";
-        for (i = 0; i < description['sections'][0]['items'].length; i++) {
-            if (description['sections'][0]['items'][i] != undefined && description['sections'][0]['items'][i]['type'] == 'p') {
-                validDescription += description['sections'][0]['items'][i]['text'];
-            }
-        }
-
-        document.getElementById('venue_description').innerHTML = validDescription;
-
-        if (description['title'] == "Not found." || description['description'] == "Wikipedia disambiguation page") {
-            getCorrectWikipediaPage(venueName);
-        }
-    }).fail(function (error) {
-        getCorrectWikipediaPage(venueName);
-    });
 }
 
 function thumbnailClickListener(event) {
@@ -101,7 +70,7 @@ function thumbnailClickListener(event) {
     document.getElementById('venue_details_address').innerText = venueAddress;
     document.getElementById('venue_details_category').innerText = venueCategory;
 
-    setDescription(venueName);
+    setVenueDescription(venueName);
 }
 
 $(document).ready(function () {
